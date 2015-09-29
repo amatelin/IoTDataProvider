@@ -38,10 +38,21 @@ router.get("/payload", function(req, res) {
             } 
             ], function(err, results) {
                 outString = "";
+
                 for (i in results) {
-                    outString += results[i];
+                    if (typeof(results[i])=="object") {
+                        for (j in results[i]) {
+                            var str = "" + results[i][j];
+                            var pad = "000"
+                            var ans = pad.substring(0, pad.length - str.length) + str
+                            outString += (ans + ",");
+                        }
+                    } else {
+                        outString += (results[i] + ",") 
+                    }
+
                 }
-                res.json(results);
+                res.json(outString);
             }
         );
     });
