@@ -23,35 +23,31 @@ router.get("/payload", function(req, res) {
     var api_key = req.query.key;
 
     Client.findOne({api_key: api_key}, function(err, client) {
-        var api_provider = Object.keys(client.payload)[0]
-        var api_method = client.payload[api_provider].method
-        var api_method_options = client.payload[api_provider].option.split(";")
+        var async_queue = []; // Stores all the methods specified in the payload and passes them to async
+        console.log(client.payload);
+        console.log(client.payload.length)
+        for (i = 0; i<client.payload.length; i++) {
+            var api_provider = Object.keys(client.payload[i])[0]
+            var api_method = client.payload[i][api_provider].method
+            var api_method_options = client.payload[i][api_provider].option
 
-        async.parallel([
-            function(callback) {
-                apis[api_provider][api_method](api_method_options[0], api_method_options[1], function(code) {
-                    callback(null, code)
+            async_queue.push(function(callback) {
+                apis[api_provider][api_method](api_method_options, function(result) {
+                    callback(null, result);
                 });
-            }, 
-            function(callback) {
-                callback(null, "test");
-            } 
-            ], function(err, results) {
+            });  
+        }
+
+        // Execute all methods from payload in parralel
+        // return result as a string containing every returned values
+        // separated by ','
+        async.parallel(async_queue, function(err, results) {
                 outString = "";
 
                 for (i in results) {
-                    if (typeof(results[i])=="object") {
-                        for (j in results[i]) {
-                            var str = "" + results[i][j];
-                            var pad = "000"
-                            var ans = pad.substring(0, pad.length - str.length) + str
-                            outString += (ans + ",");
-                        }
-                    } else {
-                        outString += (results[i] + ",") 
-                    }
-
+                        outString += (i<(results.length-1) ? (results[i] + ",") : results[i]) 
                 }
+
                 res.json(outString);
             }
         );
@@ -71,14 +67,14 @@ router.post("/", function(req, res, next) {
     var payload = {};
     payload[api] = {};
     payload[api].method = apiMethod;
-    payload[api].option = apiOption;
+    payload[api].option = eval('({' + apiOption + '})');
 
     // Create new client document
     Client.create({
         name: name, 
         api_key: hat(),
         owner_name: req.session.user.name,
-        payload: payload
+        payload: [payload]
     }, function(err, client) {
         if (err) {
             console.log("Error creating new client: " + err);

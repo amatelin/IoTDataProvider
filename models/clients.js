@@ -5,7 +5,7 @@ var clientSchema = new mongoose.Schema({
     name: {type: String, required: true},
     owner_name: {type: String, required: true},
     api_key: {type: String},
-    payload: {type: Object}, 
+    payload: {type: Array}, 
     created_at: {type: Date, default: Date.now},
 });
 
