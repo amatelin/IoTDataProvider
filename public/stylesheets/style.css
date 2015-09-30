@@ -55,11 +55,11 @@
     color: #CE4343;
 }
 
-.add-variable {
+.add-payload-component {
     text-align: center;
 }
 
-.add-variable-btn {
+.add-payload-btn {
     color: #88D67C;
     padding-right: 2px;
     padding-left: 2px;
@@ -67,8 +67,8 @@
     font-size: 25px;
 }
 
-.add-variable-btn:hover, 
-.add-variable-btn:active,
-.add-variable-btn:focus {
+.add-payload-btn:hover, 
+.add-payload-btn:active,
+.add-payload-btn:focus {
     color: #4AAF3A;
 }

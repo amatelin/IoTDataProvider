@@ -9,19 +9,21 @@ Parameters are stored in an object so that we can standardized the calls to the 
 */    
     var user = params.user;
     var hashtag = params.hashtag;
+    console.log(hashtag);
 
     twitter.userTimeline(user, function(tweets) {
-        var tag1 = "#tagColor";
-        var tag2 = "tagPin"
-        
+    
         loop1 : for (i in tweets) { // iterate through the tweets from last to oldest
             var text = tweets[i]["text"]; // Get text from the tweet
+            // console.log(text);
             var split_text = text.split(","); //split at sep if multiple arguments
+            // console.log(split_text)
 
             loop2 : for (j in split_text) { // iterate through split text
-                if (split_text[j].indexOf(tag1) > -1) { // if hashtag found in text, 
+                if (split_text[j].indexOf(hashtag) > -1) { // if hashtag found in text, 
                     var pair = split_text[j].split(":"); // split at ':' to get value pair
                     var value = pair[1].replace(/ /g,''); // strip whitespace
+                    // console.log(pair);
                     break loop1; // break out of the loop to return result
                 }
             }
@@ -39,6 +41,7 @@ The input color code must be in hexadecimal format, the output will be a string
 containing the 3 values separated by "," and padded with 0s if the value is <100.
 */
     var hexColorCode;
+    // console.log(params);
 
     this.findKeyValue(params, function(value) {
             rgbColorCode = hexToRgb(value);

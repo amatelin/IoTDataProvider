@@ -24,24 +24,28 @@ router.get("/payload", function(req, res) {
 
     Client.findOne({api_key: api_key}, function(err, client) {
         var async_queue = []; // Stores all the methods specified in the payload and passes them to async
-        console.log(client.payload);
-        console.log(client.payload.length)
+
         for (i = 0; i<client.payload.length; i++) {
             var api_provider = Object.keys(client.payload[i])[0]
             var api_method = client.payload[i][api_provider].method
             var api_method_options = client.payload[i][api_provider].option
-
+            console.log(api_method_options)
             async_queue.push(function(callback) {
                 apis[api_provider][api_method](api_method_options, function(result) {
+                    console.log(api_method_options)
                     callback(null, result);
                 });
             });  
+
         }
+
+        // console.log(async_queue)
 
         // Execute all methods from payload in parralel
         // return result as a string containing every returned values
         // separated by ','
         async.parallel(async_queue, function(err, results) {
+            // console.log(results)
                 outString = "";
 
                 for (i in results) {
@@ -60,21 +64,35 @@ router.post("/", function(req, res, next) {
     // Get values from POST request
     console.log(req.body)
     var name = req.body.name;
-    var api = req.body.payloadApi;
-    var apiMethod = req.body.payloadMethod;
-    var apiOption = req.body.payloadOption;
+    var apis = req.body.payloadApi;
+    var apiMethods = req.body.payloadMethod;
+    var apiOptions = req.body.payloadOption;
 
-    var payload = {};
+    var payload = [];
+    console.log(apis)
+    console.log(apis.length)
+    for (var i=0; i<apis.length; i++) {
+        console.log("coucou")
+        payloadComponent = {};
+        payloadComponent[apis[i]] = {};
+        payloadComponent[apis[i]].method = apiMethods[i];
+        payloadComponent[apis[i]].option = eval('({' + apiOptions[i] + '})');
+        
+        console.log(payloadComponent);
+        payload.push(payloadComponent);
+    }
+    console.log(payload)
+    /*var payload = {};
     payload[api] = {};
     payload[api].method = apiMethod;
-    payload[api].option = eval('({' + apiOption + '})');
+    payload[api].option = eval('({' + apiOption + '})');*/
 
     // Create new client document
     Client.create({
         name: name, 
         api_key: hat(),
         owner_name: req.session.user.name,
-        payload: [payload]
+        payload: payload
     }, function(err, client) {
         if (err) {
             console.log("Error creating new client: " + err);

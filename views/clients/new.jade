@@ -9,22 +9,27 @@ block content
                 input#inputName.form-control(type="text", placeholder="ex: Spark core 1", name="name")
             div.col-md-12
                 h3 Payload options
-                div.form-group.col-md-4.pull-left
-                    label(for="selectApi") Api
-                    select#selectApi.form-control(name="payloadApi")
-                        option(disabled, selected) Select API
+                ul.list-unstyled.payload-options
+                    li.add-payload-component.col-md-6
+                        button.btn.btn-link.add-payload-btn 
+                            span.glyphicon.glyphicon-plus-sign
+                    li#payload-component-model.col-md-12.hidden
+                        div.form-group.col-md-4.pull-left
+                            label(for="selectApi") Api
+                            select.selectApi.form-control(name="payloadApi" disabled)
+                                option(disabled, selected) Select API
+                                - each i, api in apis_list
+                                    option(value="#{api}") #{api}
                         - each i, api in apis_list
-                            option(value="#{api}") #{api}
-                - each i, api in apis_list
-                    div.apiOptionsForm.col-md-8.pull-left.hidden(id="#{api}_form")
-                        div.form-group.col-md-6
-                            label(for="selectMethod") Method
-                            select#selectMethod.inputMethod.form-control(name="payloadMethod" disabled)
-                                - each i, method in apis_list[api]
-                                        option(value="#{method}") #{method}
-                        div.form-group.col-md-6.pull-left
-                            label(for="methodOptions") Parameters
-                            input#methodOptions.inputMethod.form-control(type="text", name="payloadOption" disabled)
+                            div.api-options-form.col-md-8.pull-left.hidden(class="#{api}_form")
+                                div.form-group.col-md-6
+                                    label(for="selectMethod") Method
+                                    select.selectMethod.inputMethod.form-control(name="payloadMethod" disabled)
+                                        - each i, method in apis_list[api]
+                                                option(value="#{method}") #{method}
+                                div.form-group.col-md-6.pull-left
+                                    label(for="methodOptions") Parameters
+                                    input.methodOptions.inputMethod.form-control(type="text", name="payloadOption" disabled)
 
             div.col-md-12 
                 button#btnSubmit.btn.btn-success(type="submit").
@@ -35,13 +40,23 @@ block inPageScript
     script.
         var apisListObject =!{JSON.stringify(apis_list)}
 
-        $("#selectApi").change(function(){
+        $(document).on("change", ".selectApi", function() {
+            var parent = $(this).parent().parent();
             var api_selected = $(this).children(":selected").text();
-            var sel = "#" + api_selected + "_form";
+            var sel = "." + api_selected + "_form";
 
-            $(".apiOptionsForm").addClass("hidden");
-            $(".inputMethod").attr("disabled", true);
-            $(sel).removeClass("hidden");
-            $(sel + " div select").attr("disabled", false);
-            $(sel + " div input").attr("disabled", false)
+            parent.find(".api-options-form").addClass("hidden");
+            parent.find(".inputMethod").attr("disabled", true);
+            parent.find(sel).removeClass("hidden");
+            parent.find(sel + " div select").attr("disabled", false);
+            parent.find(sel + " div input").attr("disabled", false)
         });
+
+        $(".add-payload-btn").on("click", function(e) {
+            e.preventDefault();
+            console.log("A");
+
+            var elem = $("#payload-component-model").clone().removeAttr("id").removeClass("hidden");
+            elem.find(".selectApi").attr("disabled", false);
+            elem.insertBefore(".add-payload-component");   
+        })
