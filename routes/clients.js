@@ -5,7 +5,8 @@ var express = require("express"),
     Client = mongoose.model("Client"),
     hat = require("hat"),
     async = require("async"),
-    apis = require("../apis/index");
+    apis = require("../apis/index"),
+    helper = require("../utils");
 
 
 router.get("/new", function(req, res) {
@@ -49,6 +50,27 @@ router.get("/payload", function(req, res) {
                 res.json(outString);
             }
         );
+    });
+});
+
+// POST request to update API key
+router.post("/update/key", helper.authenticate, function(req, res) {
+    var redirectUrl = req.headers.referer; // used to redirect to client edit page
+    // Get values from the POST request
+    var id = req.body.id;
+
+    // Find client by ID 
+    Client.findById(id, function(err, client) {
+        if (err) {
+            console.log("Error retrieving client: " + err);
+            req.session.error = "A problem occured finding the client";
+            res.redirect(redirectUrl);
+        } else {
+            // Update dataset with new key
+            client.update({api_key: hat()}, function(err, clientID) {
+                res.redirect(redirectUrl);
+            });
+        }
     });
 });
 
