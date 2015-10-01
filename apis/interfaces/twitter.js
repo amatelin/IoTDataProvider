@@ -2,6 +2,9 @@ var twitter = require("../parent/twitter.js");
 
 exports.findKeyValue = function(params, next) {
 /*
+Params : 
+        - user: username of timeline in which to search
+        - hashtag: marker that will precede the value we're looking for
 Will look in the *user*'s timeline for the last tweet marked with the provided 
 *hashtag* and returns the following value. The format of the tweet must be:
 '#hashtag1 : value1, #hashtag2, value2' etc.
@@ -9,7 +12,6 @@ Parameters are stored in an object so that we can standardized the calls to the 
 */    
     var user = params.user;
     var hashtag = params.hashtag;
-    console.log(hashtag);
 
     twitter.userTimeline(user, function(tweets) {
     
@@ -28,7 +30,7 @@ Parameters are stored in an object so that we can standardized the calls to the 
                 }
             }
         }
-        next(value); // pass value to callback
+        return next(null, value); // pass value to callback
     });
 
 }
@@ -41,9 +43,8 @@ The input color code must be in hexadecimal format, the output will be a string
 containing the 3 values separated by "," and padded with 0s if the value is <100.
 */
     var hexColorCode;
-    // console.log(params);
-
-    this.findKeyValue(params, function(value) {
+    exports.findKeyValue(params, function(err, value) {
+            console.log(value)
             rgbColorCode = hexToRgb(value);
             stringColorCode = "";
             for (i in rgbColorCode) {
@@ -52,7 +53,7 @@ containing the 3 values separated by "," and padded with 0s if the value is <100
                 var ans = pad.substring(0, pad.length - str.length) + str
                 stringColorCode += (i < (rgbColorCode.length-1) ? (ans + ",") : ans);                    
             }
-            next(stringColorCode);
+            return next(null, stringColorCode);
     }); 
 }
 

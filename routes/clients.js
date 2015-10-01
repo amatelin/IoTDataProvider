@@ -25,27 +25,20 @@ router.get("/payload", function(req, res) {
     Client.findOne({api_key: api_key}, function(err, client) {
         var async_queue = []; // Stores all the methods specified in the payload and passes them to async
 
-        for (i = 0; i<client.payload.length; i++) {
+        for (var i = 0; i<client.payload.length; i++) {
             var api_provider = Object.keys(client.payload[i])[0]
             var api_method = client.payload[i][api_provider].method
             var api_method_options = client.payload[i][api_provider].option
-            console.log(api_method_options)
-            async_queue.push(function(callback) {
-                apis[api_provider][api_method](api_method_options, function(result) {
-                    console.log(api_method_options)
-                    callback(null, result);
-                });
-            });  
+            // Bind arguments to the corresponding method and add to list of functions
+            // that will be executed by async
+            var method = apis[api_provider][api_method].bind(null, api_method_options);
 
+            async_queue.push(method); 
         }
-
-        // console.log(async_queue)
-
         // Execute all methods from payload in parralel
         // return result as a string containing every returned values
         // separated by ','
         async.parallel(async_queue, function(err, results) {
-            // console.log(results)
                 outString = "";
 
                 for (i in results) {
@@ -62,31 +55,22 @@ router.get("/payload", function(req, res) {
 // Create - POST
 router.post("/", function(req, res, next) {
     // Get values from POST request
-    console.log(req.body)
     var name = req.body.name;
-    var apis = req.body.payloadApi;
-    var apiMethods = req.body.payloadMethod;
-    var apiOptions = req.body.payloadOption;
+    // In case only a single method was set, wrap in list
+    var apis = ((typeof(req.body.payloadApi) == 'string') ? [req.body.payloadApi] : req.body.payloadApi);
+    var apiMethods = ((typeof(req.body.payloadMethod) == 'string') ? [req.body.payloadMethod] : req.body.payloadMethod);
+    var apiOptions = ((typeof(req.body.payloadOption) == 'string') ? [req.body.payloadOption] : req.body.payloadOption);
 
     var payload = [];
-    console.log(apis)
-    console.log(apis.length)
+    // Build payload from form info
     for (var i=0; i<apis.length; i++) {
-        console.log("coucou")
         payloadComponent = {};
         payloadComponent[apis[i]] = {};
         payloadComponent[apis[i]].method = apiMethods[i];
         payloadComponent[apis[i]].option = eval('({' + apiOptions[i] + '})');
         
-        console.log(payloadComponent);
         payload.push(payloadComponent);
     }
-    console.log(payload)
-    /*var payload = {};
-    payload[api] = {};
-    payload[api].method = apiMethod;
-    payload[api].option = eval('({' + apiOption + '})');*/
-
     // Create new client document
     Client.create({
         name: name, 
