@@ -3,12 +3,13 @@
 }
 
 .landing-body {
-    margin-top: 10%;
+    margin-top: 1%;
 }
 
 .landing-logo {
-    height: 275px;
-    width: 275px;
+    margin-top: 5%;
+    width: 830px;
+    height: 243px;
     margin-bottom: 2.5%;
     background-image: url("/images/logo.png");
 }

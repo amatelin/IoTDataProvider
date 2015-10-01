@@ -15,7 +15,8 @@ router.get("/new", function(req, res) {
 
 router.get("/:id/edit", function(req, res) {
     Client.findOne({_id: req.params.id}, function(err, client) {
-        res.render("clients/edit", {client: client});
+        res.render("clients/edit", {client: client, 
+                                    apis_list: apis});
     });
 });
 
@@ -104,34 +105,36 @@ router.get("/:id", function(req, res){
 
 // Update by ID - PUT
 router.put("/:id/edit", function(req, res) {
-    // Get form values   
-    var passError = null;
+    // Get values from POST request
+    var name = req.body.name;
+    // In case only a single method was set, wrap in list
+    var apis = ((typeof(req.body.payloadApi) == 'string') ? [req.body.payloadApi] : req.body.payloadApi);
+    var apiMethods = ((typeof(req.body.payloadMethod) == 'string') ? [req.body.payloadMethod] : req.body.payloadMethod);
+    var apiOptions = ((typeof(req.body.payloadOption) == 'string') ? [req.body.payloadOption] : req.body.payloadOption);
 
-    if (!passError) {
-        //find client document by ID
-        Client.findById(req.params.id, function(err, client) {
-            if (err) {
-                console.log("Error retrieving client " + err);
-                req.session.error = "A problem occured retrieving the client.";
-                res.redirect("/settings");
-            } else {
-
-                // Save is used instead of update so that the hashing middleware is called on the password
-                client.save(client, function(err, clientID) {
-                    if (err) {
-                        console.log("Error updating client: " + err);
-                        req.session.error = "A problem occured updating the client.";
-                        res.redirect("/settings");
-                    } else {
-                        console.log("UPDATE client with id: " + clientID);
-                        // Regenerate session with new client info
-                        res.redirect("/index"); 
-                    }                      
-                });               
-            }
-
-        });        
+    var payload = [];
+    // Build payload from form info
+    for (var i=0; i<apis.length; i++) {
+        payloadComponent = {};
+        payloadComponent[apis[i]] = {};
+        payloadComponent[apis[i]].method = apiMethods[i];
+        payloadComponent[apis[i]].option = eval('({' + apiOptions[i] + '})');
+        
+        payload.push(payloadComponent);
     }
+
+    Client.findById(req.params.id, function(err, client) {
+        client.update({name:name, payload: payload}, 
+            function(err, client) {
+                if (err) {
+                    console.log("Error updating client: " + err);
+                    res.send("Error updating client.");
+                } else {
+                    console.log("PUT updating client: " + client._id);
+                    res.redirect("/index");
+                }    
+        });
+    });
 });
 
 // Delete by ID - DELETE

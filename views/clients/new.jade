@@ -40,8 +40,6 @@ block content
 
 block inPageScript
     script.
-        var apisListObject =!{JSON.stringify(apis_list)}
-
         $(document).on("change", ".selectApi", function() {
             var parent = $(this).parent().parent();
             var api_selected = $(this).children(":selected").text();
@@ -56,7 +54,6 @@ block inPageScript
 
         $(".add-payload-btn").on("click", function(e) {
             e.preventDefault();
-            console.log("A");
 
             var elem = $("#payload-component-model").clone().removeAttr("id").removeClass("hidden");
             elem.find(".selectApi").attr("disabled", false);
