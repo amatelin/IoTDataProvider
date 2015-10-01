@@ -1,27 +1,29 @@
 extends ../layout
 
 block content
-    div.col-md-6
+    div.col-md-8
         h1 New client
         form#formAddClient(name="addClient", method="post", action="/clients")
-            div.form-group.col-md-6
+            div.form-group.col-md-4
                 label(for="inputName") Name:
                 input#inputName.form-control(type="text", placeholder="ex: Spark core 1", name="name")
             div.col-md-12
                 h3 Payload options
                 ul.list-unstyled.payload-options
-                    li.add-payload-component.col-md-6
+                    li.add-payload-component.col-md-3
                         button.btn.btn-link.add-payload-btn 
                             span.glyphicon.glyphicon-plus-sign
                     li#payload-component-model.col-md-12.hidden
-                        div.form-group.col-md-4.pull-left
+                        btn.btn.btn-link.delete-component-btn.pull-left
+                            span.glyphicon.glyphicon-minus-sign
+                        div.form-group.col-md-3.pull-left
                             label(for="selectApi") Api
                             select.selectApi.form-control(name="payloadApi" disabled)
                                 option(disabled, selected) Select API
                                 - each i, api in apis_list
                                     option(value="#{api}") #{api}
                         - each i, api in apis_list
-                            div.api-options-form.col-md-8.pull-left.hidden(class="#{api}_form")
+                            div.api-options-form.col-md-7.pull-left.hidden(class="#{api}_form")
                                 div.form-group.col-md-6
                                     label(for="selectMethod") Method
                                     select.selectMethod.inputMethod.form-control(name="payloadMethod" disabled)
@@ -59,4 +61,8 @@ block inPageScript
             var elem = $("#payload-component-model").clone().removeAttr("id").removeClass("hidden");
             elem.find(".selectApi").attr("disabled", false);
             elem.insertBefore(".add-payload-component");   
-        })
+        });
+
+        $(document).on("click", ".delete-component-btn", function() {
+            $(this).parent().remove();
+        });

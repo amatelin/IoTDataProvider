@@ -104,11 +104,7 @@ router.get("/:id", function(req, res){
 
 // Update by ID - PUT
 router.put("/:id/edit", function(req, res) {
-    // Get form values
-    var newclientname = req.body.clientname;
-    var newPassword = req.body.newPassword;
-    var newPasswordBis = req.body.newPasswordConfirm;
-    
+    // Get form values   
     var passError = null;
 
     if (!passError) {

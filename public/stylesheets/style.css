@@ -42,16 +42,17 @@
     width: 50%;
 }
 
-.delete-variable-btn {
+.delete-component-btn {
     color: #D67C7C;
+    margin-top: 3%;
     padding-right: 2px;
     padding-left: 2px;
     font-size: 20px;
 }
 
-.delete-variable-btn:hover, 
-.delete-variable-btn:active, 
-.delete-variable-btn:focus {
+.delete-component-btn:hover, 
+.delete-component-btn:active, 
+.delete-component-btn:focus {
     color: #CE4343;
 }
 

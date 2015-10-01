@@ -4,6 +4,9 @@ var express = require("express"),
     twitter = require("../apis/parent/twitter");
     services = require("../apis/index");
 
+/*
+Mostly used for testing purposes.
+*/
 router.get("/", function(req, res) {
 
 });

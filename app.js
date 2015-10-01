@@ -17,13 +17,11 @@ mongoose.connect("mongodb://localhost/dhdb", function(err) {
 
 // Loading DB models
 var user = require("./models/users"),
-    dataset = require("./models/datasets"),
     client = require("./models/clients");
 
 //  Loading routes
 var routes = require("./routes/index");
     users = require("./routes/users"),
-    datasets = require("./routes/datasets"),
     apis = require("./routes/apis"),
     clients = require("./routes/clients");
 
@@ -63,7 +61,6 @@ app.use(methodOverride(function(req, res){
 // Register routes
 app.use("/", routes);
 app.use("/users", users);
-app.use("/datasets", datasets);
 app.use("/apis", apis);
 app.use("/clients", clients);
 
