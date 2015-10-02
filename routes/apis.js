@@ -43,5 +43,12 @@ router.get("/twitter/findColorCode", function(req, res) {
     });
 });
 
+router.get("/twitter/globalSearch", function(req, res) {
+    var query = req.query.query
+    twitter.globalSearch(query, function(response) {
+        res.json(response);
+    });
+});
+
 
 module.exports = router;

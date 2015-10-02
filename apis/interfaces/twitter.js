@@ -13,7 +13,7 @@ Parameters are stored in an object so that we can standardized the calls to the 
     var user = params.user;
     var hashtag = params.hashtag;
 
-    twitter.userTimeline(user, function(tweets) {
+    twitter.globalSearch(user, function(tweets) {
     
         loop1 : for (i in tweets) { // iterate through the tweets from last to oldest
             var text = tweets[i]["text"]; // Get text from the tweet
