@@ -7,11 +7,14 @@ var client = new Twitter(config.twitter);
 exports.search = function(text, next) {
     var params = {q: text};
     client.get('search/tweets', params, function(error, tweets, response){
-       // console.log(tweets);
-       /*for (property in tweets["statuses"]) {
-        console.log(tweets["statuses"][property].text)
-       }*/
-       next(null, tweets);
+      if (!error&&response) {
+        next(null, tweets);
+      } else if (error) {
+        next(error, null);
+      } else {
+        next("no tweets received", null);
+      }
+
     });
 }
 
@@ -28,9 +31,13 @@ exports.geoSearch = function(text, next) {
 exports.userTimeline = function(text, next) {
     var params = {screen_name: text}; 
     client.get('statuses/user_timeline.json', params, function(error, tweets, response){
-        if (!error) {
-            next(null, tweets);
-        }
+      if (!error&&response) {
+        next(null, tweets);
+      } else if (error) {
+        next(error, null);
+      } else {
+        next("no tweets received", null);
+      }
     });
 }
 
@@ -39,6 +46,10 @@ exports.globalSearch = function(text, next) {
       this.search.bind(null, "@"+text),
       this.userTimeline.bind(null, text)
     ], function(err, results) {
-      next(results[0]["statuses"].concat(results[1]["statuses"]))
+      if (!err) {
+        next(null, results[0]["statuses"].concat(results[1]["statuses"]))        
+      } else {
+      }
+
   });
 }

@@ -13,26 +13,30 @@ Parameters are stored in an object so that we can standardized the calls to the 
     var user = params.user;
     var hashtag = params.hashtag;
 
-    twitter.globalSearch(user, function(tweets) {
-    
-        loop1 : for (i in tweets) { // iterate through the tweets from last to oldest
-            var text = tweets[i]["text"]; // Get text from the tweet
-            // console.log(text);
-            var split_text = text.split(","); //split at sep if multiple arguments
-            // console.log(split_text)
+    twitter.globalSearch(user, function(err, tweets) {
+        if (!err) {
+                try {
+                    loop1 : for (i in tweets) { // iterate through the tweets from last to oldest
+                        var text = tweets[i]["text"]; // Get text from the tweet
+                        var split_text = text.split(","); //split at sep if multiple arguments
 
-            loop2 : for (j in split_text) { // iterate through split text
-                if (split_text[j].indexOf(hashtag) > -1) { // if hashtag found in text, 
-                    var pair = split_text[j].split(":"); // split at ':' to get value pair
-                    var value = pair[1].replace(/ /g,''); // strip whitespace
-                    // console.log(pair);
-                    break loop1; // break out of the loop to return result
-                }
-            }
+                        loop2 : for (j in split_text) { // iterate through split text
+                            if (split_text[j].indexOf(hashtag) > -1) { // if hashtag found in text, 
+                                var pair = split_text[j].split(":"); // split at ':' to get value pair
+                                var value = pair[1].replace(/ /g,''); // strip whitespace
+                                // console.log(pair);
+                                break loop1; // break out of the loop to return result
+                            }
+                        }
+                    }
+                    return next(null, value); // pass value to callback    
+                } catch(err) {
+                    return next(err, null);
+                }        
+        } else {
+            return next(err, null);
         }
-        return next(null, value); // pass value to callback
     });
-
 }
 
 exports.findColorCode = function(params, next) {
@@ -44,16 +48,21 @@ containing the 3 values separated by "," and padded with 0s if the value is <100
 */
     var hexColorCode;
     exports.findKeyValue(params, function(err, value) {
-            console.log(value)
-            rgbColorCode = hexToRgb(value);
-            stringColorCode = "";
-            for (i in rgbColorCode) {
-                var str = "" + rgbColorCode[i];
-                var pad = "000"
-                var ans = pad.substring(0, pad.length - str.length) + str
-                stringColorCode += (i < (rgbColorCode.length-1) ? (ans + ",") : ans);                    
+            if (!err) {
+                console.log(value)
+                rgbColorCode = hexToRgb(value);
+                stringColorCode = "";
+                for (i in rgbColorCode) {
+                    var str = "" + rgbColorCode[i];
+                    var pad = "000"
+                    var ans = pad.substring(0, pad.length - str.length) + str
+                    stringColorCode += (i < (rgbColorCode.length-1) ? (ans + ",") : ans);                    
+                }
+                return next(null, stringColorCode);                
+            } else {
+                return next(err, null);
             }
-            return next(null, stringColorCode);
+
     }); 
 }
 

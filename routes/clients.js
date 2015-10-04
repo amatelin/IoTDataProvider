@@ -41,13 +41,18 @@ router.get("/payload", function(req, res) {
         // return result as a string containing every returned values
         // separated by ','
         async.parallel(async_queue, function(err, results) {
-                outString = "";
+                if (!err) {
+                    outString = "";
 
-                for (i in results) {
+                    for (i in results) {
                         outString += (i<(results.length-1) ? (results[i] + ",") : results[i]) 
+                    }
+
+                    res.json(outString);                    
+                } else {
+                    res.sendStatus(-1);
                 }
 
-                res.json(outString);
             }
         );
     });
