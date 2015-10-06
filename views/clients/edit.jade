@@ -49,9 +49,9 @@ block content
 
 block inPageScript
     script.
-        var apisListObject =!{JSON.stringify(apis_list)};
         var clientObject =!{JSON.stringify(client)};
 
+        // If an API is selected, show and enable corresponding select fields
         $(document).on("change", ".selectApi", function() {
             var parent = $(this).parent().parent();
             var api_selected = $(this).children(":selected").text();
@@ -64,6 +64,7 @@ block inPageScript
             parent.find(sel + " div input").attr("disabled", false)
         });
 
+        // Add new payload component field if the add button is pressed
         $(".add-payload-btn").on("click", function(e) {
             e.preventDefault();
 
@@ -72,25 +73,35 @@ block inPageScript
             elem.insertBefore(".add-payload-component");   
         });
 
+        // Remove payload component field if the delete button is pressed
         $(document).on("click", ".delete-component-btn", function() {
             $(this).parent().remove();
         });
 
+        // Insert payload components already registered in client using the hidden model
         $(document).ready(function() {
-            console.log(clientObject.payload.length)
             for (var i=0; i<clientObject.payload.length; i++) {
-            var elem = $("#payload-component-model").clone().removeAttr("id").removeClass("hidden");
-            elem.find(".selectApi").attr("disabled", false);
-            elem.insertBefore(".add-payload-component");  
+                // Copy model element and enable first select field 
+                var elem = $("#payload-component-model").clone();
+                elem.removeAttr("id").removeClass("hidden");
+                elem.find(".selectApi").attr("disabled", false);
+                elem.insertBefore(".add-payload-component");  
 
-            var api_selected = Object.keys(clientObject.payload[i])[0];
-            var sel = "." + api_selected + "_form";
-            elem.find(sel).removeClass("hidden");
-            elem.find("option[value='"+api_selected+"']").attr("selected", true);
-            elem.find("div select").attr("disabled", false);
+                // select option so that it match the one from the client 
+                // make field visible and enable
+                var api_selected = Object.keys(clientObject.payload[i])[0];
+                var method_selected = clientObject.payload[i][api_selected].method;
 
-            var option = JSON.stringify(clientObject.payload[i][api_selected].option).replace("}", "").replace("{", "")
-            elem.find("div input").attr("value", option);
-            elem.find("div input").attr("disabled", false);
+                var sel = "." + api_selected + "_form";
+                var elemApi = elem.find(sel).removeClass("hidden");
+                console.log(elem.find("option[value='"+api_selected+"']"))
+                elem.find("option[value='"+api_selected+"']").attr("selected", true);
+                elemApi.find("div select").attr("disabled", false);
+                elemApi.find("div select option[value='"+method_selected+"']").attr("selected", true);
+
+                // get options set by client and insert into option field
+                var option = JSON.stringify(clientObject.payload[i][api_selected].option).replace("}", "").replace("{", "")
+                elemApi.find("div input").attr("value", option);
+                elemApi.find("div input").attr("disabled", false);
             }
         });

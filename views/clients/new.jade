@@ -40,6 +40,7 @@ block content
 
 block inPageScript
     script.
+        // If an API is selected, show and enable corresponding select fields
         $(document).on("change", ".selectApi", function() {
             var parent = $(this).parent().parent();
             var api_selected = $(this).children(":selected").text();
@@ -52,6 +53,7 @@ block inPageScript
             parent.find(sel + " div input").attr("disabled", false)
         });
 
+        // Add new payload component field if the add button is pressed
         $(".add-payload-btn").on("click", function(e) {
             e.preventDefault();
 
@@ -60,6 +62,7 @@ block inPageScript
             elem.insertBefore(".add-payload-component");   
         });
 
+        // Remove payload component field if the delete button is pressed
         $(document).on("click", ".delete-component-btn", function() {
             $(this).parent().remove();
         });
