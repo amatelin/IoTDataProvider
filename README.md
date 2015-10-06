@@ -3,7 +3,7 @@
 The goal of this application is to simplify data exchange between third-party APIs and IoT devices (Arduino Yun, spark, ESP8266 etc.).   
 
 ## How does it work ?
-The concept is simple : each IoT device is linked to a **client** in the application. A client is composed of an **API key** used to authenticate the requests of the device, and of a list of methods that will be used to retrieve the data that composes its payload. 
+The concept is simple : each IoT device is linked to a **client** in the application. A client is composed of an **API key** used to authenticate the **requests** of the device, and of a list of **methods** that will be used to retrieve the data that composes its **payload**. 
 
 The device makes its request to the app, providing its API key, and the app returns the payload as a string (format csv: each value is separated by a coma). 
 
@@ -16,6 +16,7 @@ The following url is used to pass a request :
 
 ## How to add new APIs to the App:
 New APIs are registered in the **apis** directory. 3 steps are required : 
+
 1. Add the functions required to communicate with the API but that wont be exposed publicly to the **parent** subdirectory. 
 2. Add the functions that will be publicly available in the **interfaces** folder. 
 3. Add the new interface to the **index.js** file at the root of the **apis** directory. 
