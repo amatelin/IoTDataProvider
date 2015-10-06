@@ -10,6 +10,7 @@ exports.search = function(text, next) {
       if (!error&&response) {
         next(null, tweets);
       } else if (error) {
+        console.log(error);
         next(error, null);
       } else {
         next("no tweets received", null);
@@ -34,6 +35,7 @@ exports.userTimeline = function(text, next) {
       if (!error&&response) {
         next(null, tweets);
       } else if (error) {
+        console.log(error);
         next(error, null);
       } else {
         next("no tweets received", null);
