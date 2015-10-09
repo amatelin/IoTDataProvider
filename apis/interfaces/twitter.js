@@ -1,4 +1,5 @@
-var twitter = require("../parent/twitter.js");
+var twitter = require("../parent/twitter.js"),
+    helpers = require("./helpers.js");
 
 exports.findKeyValue = function(params, next) {
 /*
@@ -49,8 +50,7 @@ containing the 3 values separated by "," and padded with 0s if the value is <100
     var hexColorCode;
     exports.findKeyValue(params, function(err, value) {
             if (!err) {
-                console.log(value)
-                rgbColorCode = hexToRgb(value);
+                rgbColorCode = helpers.hexToRgb(value);
                 stringColorCode = "";
                 for (i in rgbColorCode) {
                     var str = "" + rgbColorCode[i];
@@ -64,14 +64,4 @@ containing the 3 values separated by "," and padded with 0s if the value is <100
             }
 
     }); 
-}
-
-
-
-function hexToRgb(hex) {
-/*
-Source : stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-*/
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
 }

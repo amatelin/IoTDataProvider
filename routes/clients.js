@@ -50,6 +50,7 @@ router.get("/payload", function(req, res) {
 
                     res.json(outString);                    
                 } else {
+                    console.log(err);
                     res.sendStatus(-1);
                 }
 

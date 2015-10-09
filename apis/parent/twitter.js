@@ -35,7 +35,6 @@ exports.userTimeline = function(text, next) {
       if (!error&&response) {
         next(null, tweets);
       } else if (error) {
-        console.log(error);
         next(error, null);
       } else {
         next("no tweets received", null);
@@ -46,11 +45,12 @@ exports.userTimeline = function(text, next) {
 exports.globalSearch = function(text, next) {
   async.parallel([
       this.search.bind(null, "@"+text),
-      this.userTimeline.bind(null, text)
+      // this.userTimeline.bind(null, text)
     ], function(err, results) {
       if (!err) {
-        next(null, results[0]["statuses"].concat(results[1]["statuses"]))        
+        next(null, results[0]["statuses"]) //.concat(results[1]["statuses"]))        
       } else {
+        next(err, null);
       }
 
   });
