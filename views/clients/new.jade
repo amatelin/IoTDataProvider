@@ -1,7 +1,7 @@
 extends ../layout
 
 block content
-    div.col-md-8
+    div.col-md-10
         h1 New client
         form#formAddClient(name="addClient", method="post", action="/clients")
             div.form-group.col-md-4
@@ -23,13 +23,13 @@ block content
                                 - each i, api in apis_list
                                     option(value="#{api}") #{api}
                         - each i, api in apis_list
-                            div.api-options-form.col-md-7.pull-left.hidden(class="#{api}_form")
-                                div.form-group.col-md-6
+                            div.api-options-form.col-md-8.pull-left.hidden(class="#{api}_form")
+                                div.form-group.col-md-5
                                     label(for="selectMethod") Method
                                     select.selectMethod.inputMethod.form-control(name="payloadMethod" disabled)
                                         - each i, method in apis_list[api]
                                                 option(value="#{method}") #{method}
-                                div.form-group.col-md-6.pull-left
+                                div.form-group.col-md-7.pull-left
                                     label(for="methodOptions") Parameters
                                     input.methodOptions.inputMethod.form-control(type="text", name="payloadOption" disabled)
 
