@@ -26,14 +26,21 @@ router.get("/payload", function(req, res) {
     var api_key = req.query.key;
 
     Client.findOne({api_key: api_key}, function(err, client) {
-        Credential.findById(client._id, function(err, credentials) {
+        Credential.findById(req.session.user._id, function(err, credentials) {
+            cred = {}
+            cred.consumer_key = credentials.consumer_key;
+            cred.consumer_secret = credentials.consumer_secret;
+            cred.access_token_key = credentials.access_token_key;
+            cred.access_token_secret = credentials.access_token_secret;
+
             var async_queue = []; // Stores all the methods specified in the payload and passes them to async
 
             for (var i = 0; i<client.payload.length; i++) {
                 var api_provider = Object.keys(client.payload[i])[0]
                 var api_method = client.payload[i][api_provider].method
                 var api_method_options = client.payload[i][api_provider].option
-                api_method_options.credentials = credentials;
+                api_method_options.credentials = cred;
+                // console.log(api_method_options);
                 // Bind arguments to the corresponding method and add to list of functions
                 // that will be executed by async
                 var method = apis[api_provider][api_method].bind(null, api_method_options);

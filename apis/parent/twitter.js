@@ -1,18 +1,20 @@
 var Twitter = require("twitter"),
-    config = require("../../config"),
     async = require("async");
 
+var varTest = null;
 // var client = new Twitter(config.twitter);
 
 exports.search = function(params, next) {
   text = "@" + params.text;
   credentials = params.credentials;
   var client = new Twitter(credentials);
+  console.log("connected to twitter");
   var options = {q: text};
   client.get('search/tweets', options, function(error, tweets, response){
     if (!error&&response) {
       next(null, tweets);
     } else if (error) {
+      console.log("error");
       console.log(error);
       next(error, response);
     } else {
