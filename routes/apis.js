@@ -82,6 +82,8 @@ router.post("/twitter/credentials", function(req, res) {
                 consumer_secret: consumerSecret,
                 access_token_key: tokenKey,
                 access_token_secret: tokenSecret
+            }, function(err, CredID) {
+                res.redirect("/settings");
             });
         }
     });
