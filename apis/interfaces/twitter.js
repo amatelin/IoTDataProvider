@@ -25,7 +25,6 @@ Parameters are stored in an object so that we can standardized the calls to the 
                             if (split_text[j].indexOf(hashtag) > -1) { // if hashtag found in text, 
                                 var pair = split_text[j].split(":"); // split at ':' to get value pair
                                 var value = pair[1].replace(/ /g,''); // strip whitespace
-                                // console.log(pair);
                                 break loop1; // break out of the loop to return result
                             }
                         }
@@ -49,7 +48,8 @@ containing the 3 values separated by "," and padded with 0s if the value is <100
 */
     var hexColorCode;
     exports.findKeyValue(params, function(err, value) {
-            if (!err) {
+            console.log(value);
+            if (!err&&value) {
                 rgbColorCode = helpers.hexToRgb(value);
                 stringColorCode = "";
                 for (i in rgbColorCode) {
@@ -59,8 +59,10 @@ containing the 3 values separated by "," and padded with 0s if the value is <100
                     stringColorCode += (i < (rgbColorCode.length-1) ? (ans + ",") : ans);                    
                 }
                 return next(null, stringColorCode);                
-            } else {
+            } else if (err) {
                 return next(err, null);
+            } else {
+                return next(null, -1);
             }
 
     }); 

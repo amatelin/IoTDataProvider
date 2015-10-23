@@ -40,12 +40,11 @@ router.get("/payload", function(req, res) {
                 var api_method = client.payload[i][api_provider].method
                 var api_method_options = client.payload[i][api_provider].option
                 api_method_options.credentials = cred;
-                // console.log(api_method_options);
                 // Bind arguments to the corresponding method and add to list of functions
                 // that will be executed by async
                 var method = apis[api_provider][api_method].bind(null, api_method_options);
 
-                async_queue.push(method); 
+                async_queue.push(method);
             }
             // Execute all methods from payload in parralel
             // return result as a string containing every returned values

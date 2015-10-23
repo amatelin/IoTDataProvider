@@ -1,11 +1,10 @@
 var Twitter = require("twitter"),
     async = require("async");
 
-var varTest = null;
 // var client = new Twitter(config.twitter);
 
 exports.search = function(params, next) {
-  text = "@" + params.text;
+  text =  "@" + params.user;
   credentials = params.credentials;
   var client = new Twitter(credentials);
   console.log("connected to twitter");
