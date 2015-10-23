@@ -3,7 +3,8 @@ var express = require("express"),
     helper = require("../utils"),
     mongoose = require("mongoose"),
     User = mongoose.model("User"),
-    Client = mongoose.model("Client");
+    Client = mongoose.model("Client"),
+    Credential = mongoose.model("Credential");
 
 /* Views controllers */
 // GET landing page
@@ -15,21 +16,12 @@ router.get("/", function(req, res, next) {
     delete req.session.error; 
     delete req.session.success;
 
-    User.count({}, function(err, count){
-        // If a user is already registered, redirect to index
-        // else render setup view in order to register
-        if (count) {
-            if (req.session.user) {
-                res.redirect("/index");
-            } else {
-                res.render("login", {errorMessage: errorMessage,
-                                    successMessage: successMessage});
-            }
-        } else {
-            res.render("setup");
-        }
-    });
-
+    if (req.session.user) {
+        res.redirect("/index");
+    } else {
+        res.render("login", {errorMessage: errorMessage,
+                            successMessage: successMessage});
+    }
 });
 
 // GET setup page
@@ -56,7 +48,7 @@ router.get("/index", helper.authenticate, function(req, res, next) {
     delete req.session.success;
 
     // Find datasets documents owned by the current session user
-    Client.find({}, function(err, clients) {
+    Client.find({owner_name: sessionUser}, function(err, clients) {
         if (err) {
             console.log("Error retrieving datasets: " + err);
             errorMessage = "A problem occured retrieving the datasets";
@@ -78,10 +70,21 @@ router.get("/settings", helper.authenticate, function(req, res) {
     // since messages have been served, delete from session
     delete req.session.error; 
     delete req.session.success;
+    console.log(req.session.user)
+    Credential.findById(req.session.user._id, function (err, credential) {
+        if (!credential) {
+            credential = {};
+            credential.consumer_key = "",
+            credential.consumer_secret = "",
+            credential.access_token_secret = "",
+            credential.access_token_key = ""
+        }
+        res.render("settings", {user:req.session.user, 
+                                credential:credential,
+                                errorMessage: errorMessage,
+                                successMessage: successMessage})
+        });
 
-    res.render("settings", {user:req.session.user, 
-                            errorMessage: errorMessage,
-                            successMessage: successMessage});
 });
 
 /* Requests controllers */
@@ -98,8 +101,9 @@ router.post("/setup", function(req, res) {
     }, function(err, user) {
         if (err) {
             console.log("Error creating the user: " + err);
-            req.session.error = "An error occured creating the user.";
-            req.redirect("/setup");
+            // req.session.error = "An error occured creating the user.";
+            req.session.error = "This username is already taken. Please choose another one.";
+            res.redirect("/setup");
         } else {
             console.log("POST creating new user: " + user);
             // Generate new session holding newly created user's info

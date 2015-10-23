@@ -3,6 +3,7 @@ var express = require("express"),
     hat = require("hat"),
     mongoose = require("mongoose"),
     Client = mongoose.model("Client"),
+    Credential = mongoose.model("Credential"),
     hat = require("hat"),
     async = require("async"),
     apis = require("../apis/index"),
@@ -25,37 +26,40 @@ router.get("/payload", function(req, res) {
     var api_key = req.query.key;
 
     Client.findOne({api_key: api_key}, function(err, client) {
-        var async_queue = []; // Stores all the methods specified in the payload and passes them to async
+        Credential.findById(client._id, function(err, credentials) {
+            var async_queue = []; // Stores all the methods specified in the payload and passes them to async
 
-        for (var i = 0; i<client.payload.length; i++) {
-            var api_provider = Object.keys(client.payload[i])[0]
-            var api_method = client.payload[i][api_provider].method
-            var api_method_options = client.payload[i][api_provider].option
-            // Bind arguments to the corresponding method and add to list of functions
-            // that will be executed by async
-            var method = apis[api_provider][api_method].bind(null, api_method_options);
+            for (var i = 0; i<client.payload.length; i++) {
+                var api_provider = Object.keys(client.payload[i])[0]
+                var api_method = client.payload[i][api_provider].method
+                var api_method_options = client.payload[i][api_provider].option
+                api_method_options.credentials = credentials;
+                // Bind arguments to the corresponding method and add to list of functions
+                // that will be executed by async
+                var method = apis[api_provider][api_method].bind(null, api_method_options);
 
-            async_queue.push(method); 
-        }
-        // Execute all methods from payload in parralel
-        // return result as a string containing every returned values
-        // separated by ','
-        async.parallel(async_queue, function(err, results) {
-                if (!err) {
-                    outString = "";
+                async_queue.push(method); 
+            }
+            // Execute all methods from payload in parralel
+            // return result as a string containing every returned values
+            // separated by ','
+            async.parallel(async_queue, function(err, results) {
+                    if (!err) {
+                        outString = "";
 
-                    for (i in results) {
-                        outString += (i<(results.length-1) ? (results[i] + ",") : results[i]) 
+                        for (i in results) {
+                            outString += (i<(results.length-1) ? (results[i] + ",") : results[i]) 
+                        }
+
+                        res.json(outString);                    
+                    } else {
+                        console.log(err);
+                        res.sendStatus(-1);
                     }
 
-                    res.json(outString);                    
-                } else {
-                    console.log(err);
-                    res.sendStatus(-1);
                 }
-
-            }
-        );
+            );
+        });
     });
 });
 

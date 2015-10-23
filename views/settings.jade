@@ -1,9 +1,9 @@
 extends layout
 
 block content
-    div.col-md-6
+    div.col-md-5
         h1 Account settings
-        div.col-md-4
+        div.col-md-8
             form(action="/users/#{user._id}/edit",method="post",name="updateUser")
                 div.form-group
                     label(for="inputName") Username: 
@@ -20,3 +20,22 @@ block content
             form(action="users/#{user._id}/", method="POST", name="deleteUser")
                 input(type="hidden", value="DELETE", name="_method")
                 button.btn.btn-danger.pull-right(type="submit") Delete account
+    div.col-md-5.col-md-offset-2
+        h1 Twitter API settings
+        div.col-md-10
+            form(action="/apis/twitter/credentials", method="post", name="saveTwitterSettings")
+                div.form-group
+                    label(for="consumerKeyInput") Consumer Key:
+                    input#consumerKeyInput.form-control(type="text", value="#{credential.consumer_key}", name="consumerKey")
+                div.form-group
+                    label(for="consumerSecretInput") Consumer Secret: 
+                    input#consumerSecretInput.form-control(type="text", value="#{credential.consumer_secret}", name="consumerSecret")
+                div.form-group
+                    label(for="tokenKeyInput") Access Token Key:
+                    input#tokenKeyInput.form-control(type="text", value="#{credential.access_token_key}", name="tokenKey")
+                div.form-group
+                    label(for="tokenSecretInput") Acces Token Secret: 
+                    input#tokenSecretInput.form-control(type="text", value="#{credential.access_token_secret}", name="tokenSecret")
+                input(type="hidden", value="#{user._id}", name="user_id")
+                button.btn.btn-success.col-md-offset-4(type="submit") Save changes  
+

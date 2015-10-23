@@ -1,8 +1,9 @@
 var express = require("express"),
     router = express.Router(),
     mongoose = require("mongoose"),
-    twitter = require("../apis/parent/twitter");
-    services = require("../apis/index");
+    twitter = require("../apis/parent/twitter"),
+    services = require("../apis/index"),
+    Credential = mongoose.model("Credential");
 
 /*
 Mostly used for testing purposes.
@@ -15,7 +16,7 @@ router.get("/twitter/search", function(req, res) {
     var query = req.query.query;
     var geocode = req.query.geocode
     console.log(query);
-    twitter.search(query, geocode, function(response) {
+    twitter.search(query, function(err, response) {
         res.json(response);
     });
 });
@@ -50,5 +51,40 @@ router.get("/twitter/globalSearch", function(req, res) {
     });
 });
 
+router.post("/twitter/credentials", function(req, res) {
+    var user_id = req.body.user_id;
+    var consumerKey = req.body.consumerKey;
+    var consumerSecret = req.body.consumerSecret;
+    var tokenKey = req.body.tokenKey;
+    var tokenSecret = req.body.tokenSecret;
+
+    Credential.findById(user_id, function(err, credential) {
+        if (err) {
+
+        } else if (credential) {
+            credential.consumer_key = consumerKey;
+            credential.consumer_secret = consumerSecret;
+            credential.access_token_key = tokenKey;
+            credential.access_token_secret = tokenSecret;
+            credential.save(credential, function(err, credID){
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("success");
+                }
+                res.redirect("/settings");
+            })
+
+        } else {
+            Credential.create({
+                _id: user_id,
+                consumer_key: consumerKey,
+                consumer_secret: consumerSecret,
+                access_token_key: tokenKey,
+                access_token_secret: tokenSecret
+            });
+        }
+    });
+}); 
 
 module.exports = router;

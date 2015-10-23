@@ -18,6 +18,7 @@ mongoose.connect("mongodb://localhost/dhdb", function(err) {
 // Loading DB models
 var user = require("./models/users"),
     client = require("./models/clients");
+    credential = require("./models/credentials");
 
 //  Loading routes
 var routes = require("./routes/index");
