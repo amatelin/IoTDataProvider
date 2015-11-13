@@ -18,9 +18,16 @@ exports.findTrafficOverhead = function(params, next) {
             red = {r:255, g:0, b:0};
 
         var color = helpers.makeGradientColor(green, red, diffRatio);
+        for (var elem in color) {
+
+            var str = "" + color[elem];
+            var pad = "000";
+            var paddedValue = pad.substring(0, pad.length - str.length) + str;
+            color[elem] = paddedValue;
+        }
 
         console.log(color);
-        var out = String(color.r) + "," + String(color.g) + "," + String(color.b);
+        var out = color.r + "," + color.g + "," + color.b;
 
         next(null, out);
     });
