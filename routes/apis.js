@@ -1,7 +1,8 @@
 var express = require("express"),
     router = express.Router(),
     mongoose = require("mongoose"),
-    twitter = require("../apis/parent/twitter");
+    twitter = require("../apis/parent/twitter"),
+    google = require("../apis/parent/google"),
     services = require("../apis/index");
 
 /*
@@ -47,6 +48,15 @@ router.get("/twitter/globalSearch", function(req, res) {
     var query = req.query.query
     twitter.globalSearch(query, function(response) {
         res.json(response);
+    });
+});
+
+router.get("/google", function(req, res) {
+    var params = {origin :"4005 rue de Bordeaux",
+                destination: "3890 rue Rivard" ,
+                offset: 5};
+    services.google.findTrafficOverhead(params,function() {
+        res.send("caca");
     });
 });
 
